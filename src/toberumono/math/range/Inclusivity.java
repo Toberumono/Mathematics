@@ -103,6 +103,8 @@ public enum Inclusivity {
 	 *            the item being tested
 	 * @param max
 	 *            the maximum value of the range
+	 * @param <T>
+	 *            The type of item being tested
 	 * @return {@code true} iff {@code item} is between {@code min} and {@code max}
 	 */
 	public abstract <T extends Comparable<T>> boolean between(T min, T item, T max);

@@ -154,6 +154,8 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	 *            the {@link String} representation of the range
 	 * @param converter
 	 *            a {@link Function} that converts a {@link String} into an object of type {@code T}
+	 * @param <T>
+	 *            the type of item that the {@link Range} will contain
 	 * @return the {@link Range} that the {@link String} described
 	 */
 	public static <T extends Comparable<T>> Range<T> parse(String range, Function<String, T> converter) {
@@ -169,6 +171,8 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	 *            a {@link Function} that converts a {@link String} into an object of type {@code T}
 	 * @param infinityMarkers
 	 *            the {@link Pattern} to be used to identify values that are equivalent to infinity
+	 * @param <T>
+	 *            the type of item that the {@link Range} will contain
 	 * @return the {@link Range} that the {@link String} described
 	 */
 	public static <T extends Comparable<T>> Range<T> parse(String range, Function<String, T> converter, Pattern infinityMarkers) {
