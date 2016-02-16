@@ -1,6 +1,6 @@
 package toberumono.math.range;
 
-import java.util.function.BiFunction;
+import java.io.Serializable;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -11,13 +11,13 @@ import toberumono.structures.sexpressions.ConsType;
 
 /**
  * A generalized structure for storing ranges of values.<br>
- * All instances of {@link Range} are immutable.
+ * All subclasses of {@link Range} must be immutable.
  * 
  * @author Toberumono
  * @param <T>
  *            the type of the value being stored
  */
-public abstract class Range<T extends Comparable<T>> {
+public abstract class Range<T extends Comparable<T>> implements Serializable {
 	/**
 	 * All quoted values must adhere to the String specifications for Java.
 	 */
@@ -122,6 +122,13 @@ public abstract class Range<T extends Comparable<T>> {
 	 */
 	public abstract Range<T> subtract(Range<T> other);
 	
+	/**
+	 * Computes the intersection between the {@link Range} and the given {@link Range} and returns the results.
+	 * 
+	 * @param other
+	 *            the {@link Range} with which to compute the intersection
+	 * @return the intersection between the {@link Range} and the given {@link Range}
+	 */
 	public Range<T> intersection(Range<T> other) {
 		throw new UnsupportedOperationException(); //TODO implement
 	}
@@ -131,10 +138,32 @@ public abstract class Range<T extends Comparable<T>> {
 		return getInclusivity().rangeToString(getMin(), getMax());
 	}
 	
+	/**
+	 * Converts the given {@link String} into a {@link Range} using the given {@code converter}.<br>
+	 * This is a convenience method that forwards to {@link #parse(String, Function, Pattern)} with
+	 * {@link #DEFAULT_INFINITY_MARKERS} for the {@code infinityMarkers}.
+	 * 
+	 * @param range
+	 *            the {@link String} representation of the range
+	 * @param converter
+	 *            a {@link Function} that converts a {@link String} into an object of type {@code T}
+	 * @return the {@link Range} that the {@link String} described
+	 */
 	public static <T extends Comparable<T>> Range<T> parse(String range, Function<String, T> converter) {
 		return parse(range, converter, DEFAULT_INFINITY_MARKERS);
 	}
 	
+	/**
+	 * Converts the given {@link String} into a {@link Range} using the given {@code converter}.
+	 * 
+	 * @param range
+	 *            the {@link String} representation of the range
+	 * @param converter
+	 *            a {@link Function} that converts a {@link String} into an object of type {@code T}
+	 * @param infinityMarkers
+	 *            the {@link Pattern} to be used to identify values that are equivalent to infinity
+	 * @return the {@link Range} that the {@link String} described
+	 */
 	public static <T extends Comparable<T>> Range<T> parse(String range, Function<String, T> converter, Pattern infinityMarkers) {
 		ConsCell ranges = new ConsCell(), head = ranges;
 		Matcher m = RANGE_ELEMENT.matcher(range);
@@ -165,7 +194,6 @@ public abstract class Range<T extends Comparable<T>> {
 			else if (m.group(13) != null)
 				head = head.append(new ConsCell((BinaryOperator<Range<T>>) Range::subtract, OPERATION));
 			else if (m.group(14) != null) {
-				System.out.println(m.group(15));
 				String element = m.group(15) != null ? m.group(15) : m.group(17);
 				Range<T> rng = null;
 				if (element.length() == 0)
@@ -177,18 +205,30 @@ public abstract class Range<T extends Comparable<T>> {
 				head = head.append(new ConsCell(rng, RANGE));
 			}
 		}
-		while (!ranges.isLastConsCell()) {
-			head = ranges.getNextConsCell();
-			if (head.getCarType() == RANGE)
-				ranges.setCar(((Range<T>) ranges.getCar()).add((Range<T>) head.getCar()), RANGE);
-			else if (head.getCarType() == OPERATION) {
-				BiFunction<Range<T>, Range<T>, Range<T>> operation = (BinaryOperator<Range<T>>) head.getCar();
-				head = head.remove();
-				//TODO check for invalid chained operations
-				ranges.setCar(operation.apply((Range<T>) ranges.getCar(), (Range<T>) head.getCar()), RANGE);
-			}
-			head.remove();
+		return computeRanges(ranges);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static <T extends Comparable<T>> Range<T> computeRanges(ConsCell ranges) {
+		if (!ranges.hasLength(1))
+			return new EmptyRange<>();
+		Range<T> nr;
+		if (ranges.getCarType() == OPERATION) {
+			//TODO should we treat the first argument as the empty range, or throw an error?
+			//TODO test that the next one is a range.  Maybe use a ClassCastException?
+			nr = ((BinaryOperator<Range<T>>) ranges.getCar()).apply(new EmptyRange<>(), (Range<T>) (ranges = ranges.getNextConsCell()).getCar());
 		}
-		return (Range<T>) ranges.getCar();
+		else
+			nr = (Range<T>) ranges.getCar();
+		if (!ranges.hasLength(2))
+			return nr;
+		while (!(ranges = ranges.getNextConsCell()).isNull()) {
+			if (ranges.getCarType() == RANGE)
+				nr = nr.add((Range<T>) ranges.getCar());
+			else {
+				((BinaryOperator<Range<T>>) ranges.getCar()).apply(nr, (Range<T>) (ranges = ranges.getNextConsCell()).getCar()); //TODO test that the next one is a range.  Maybe use a ClassCastException?
+			}
+		}
+		return nr;
 	}
 }

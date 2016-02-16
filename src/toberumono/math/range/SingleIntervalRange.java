@@ -1,5 +1,7 @@
 package toberumono.math.range;
 
+import java.io.Serializable;
+
 /**
  * A basic implementation of {@link Range} for a single interval.
  * 
@@ -7,7 +9,7 @@ package toberumono.math.range;
  * @param <T>
  *            the type of the value being stored
  */
-class SingleIntervalRange<T extends Comparable<T>> extends Range<T> {
+class SingleIntervalRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final T min, max;
 	private final Inclusivity inclusivity;
 	

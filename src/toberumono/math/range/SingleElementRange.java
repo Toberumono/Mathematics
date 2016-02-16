@@ -1,5 +1,7 @@
 package toberumono.math.range;
 
+import java.io.Serializable;
+
 /**
  * A special implementation of {@link Range} that holds only one element.
  * 
@@ -7,7 +9,7 @@ package toberumono.math.range;
  * @param <T>
  *            the type of the value being stored
  */
-class SingleElementRange<T extends Comparable<T>> extends Range<T> {
+class SingleElementRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final T element;
 	
 	/**

@@ -1,12 +1,13 @@
 package toberumono.math.range;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import toberumono.structures.collections.lists.SortedList;
 
-class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> {
+class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final List<Range<T>> ranges;
 	private Inclusivity netInclusivity;
 	
@@ -122,8 +123,7 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> {
 			return this;
 		if (other instanceof InfiniteRange)
 			return other;
-		@SuppressWarnings("unchecked")
-		List<Range<T>> nr = (List<Range<T>>) ((SortedList<T>) ranges).clone();
+		List<Range<T>> nr = new ArrayList<>(ranges);
 		if (other instanceof MultipleIntervalRange)
 			for (Range<T> range : ((MultipleIntervalRange<T>) other).ranges)
 				addRange(nr, range);
@@ -133,7 +133,7 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> {
 			return new EmptyRange<>();
 		if (nr.size() == 1)
 			return nr.get(0);
-		return new MultipleIntervalRange<>(nr, Inclusivity.merge(nr.get(0).getInclusivity(), nr.get(nr.size() - 1).getInclusivity()));
+		return new MultipleIntervalRange<>(nr);
 	}
 	
 	private void addRange(List<Range<T>> ranges, Range<T> range) {
@@ -142,12 +142,11 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> {
 		Range<T> newRange;
 		while (mid >= 1 && ranges.size() > 1 && ranges.get(mid).findMergeability(ranges.get(mid - 1)) != 0) {
 			newRange = ranges.remove(mid).add(ranges.remove(mid - 1));
-			ranges.add(newRange);
-			mid--;
+			ranges.add(--mid, newRange);
 		}
 		while (mid < ranges.size() - 1 && ranges.size() > 1 && ranges.get(mid).findMergeability(ranges.get(mid + 1)) != 0) {
 			newRange = ranges.remove(mid).add(ranges.remove(mid));
-			ranges.add(newRange);
+			ranges.add(mid, newRange);
 		}
 	}
 	
@@ -157,7 +156,7 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> {
 			return this;
 		if (other instanceof InfiniteRange)
 			return new EmptyRange<>();
-		List<Range<T>> nr = new SortedList<>(ranges, this::compare);
+		List<Range<T>> nr = new ArrayList<>(ranges);
 		if (other instanceof MultipleIntervalRange)
 			for (Range<T> range : ((MultipleIntervalRange<T>) other).ranges)
 				subtractRange(nr, range);
@@ -170,9 +169,6 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> {
 		return new MultipleIntervalRange<>(nr);
 	}
 	
-	/*
-	 * ranges MUST be a standard ArrayList
-	 */
 	private void subtractRange(List<Range<T>> ranges, Range<T> range) {
 		Range<T> nr;
 		for (int i = 0; i < ranges.size();) {

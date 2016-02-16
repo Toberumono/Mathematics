@@ -1,5 +1,7 @@
 package toberumono.math.range;
 
+import java.io.Serializable;
+
 /**
  * A special implementation of {@link Range} that has no elements.
  * 
@@ -7,7 +9,7 @@ package toberumono.math.range;
  * @param <T>
  *            the type of the value being stored
  */
-public class EmptyRange<T extends Comparable<T>> extends Range<T> {
+public class EmptyRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	
 	/**
 	 * All elements are excluded this type of {@link Range}.

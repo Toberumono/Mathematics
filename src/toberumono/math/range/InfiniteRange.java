@@ -1,5 +1,7 @@
 package toberumono.math.range;
 
+import java.io.Serializable;
+
 /**
  * A special implementation of {@link Range} that contains every element.
  * 
@@ -7,7 +9,7 @@ package toberumono.math.range;
  * @param <T>
  *            the type of the value being stored
  */
-class InfiniteRange<T extends Comparable<T>> extends Range<T> {
+class InfiniteRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	
 	/**
 	 * All elements are included this type of {@link Range}.
