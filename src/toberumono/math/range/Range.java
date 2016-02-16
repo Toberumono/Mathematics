@@ -145,6 +145,16 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 		return getInclusivity().rangeToString(getMin(), getMax());
 	}
 	
+	@Override
+	public int hashCode() {
+		int hash = 17;
+		//The use of Doubles to get the hashCode for infinite values is a simple way of consistently representing them.
+		hash = hash * 31 + (getMin() == null ? ((Double) Double.NEGATIVE_INFINITY).hashCode() : getMin().hashCode());
+		hash = hash * 31 + (getMax() == null ? ((Double) Double.POSITIVE_INFINITY).hashCode() : getMax().hashCode());
+		hash = hash * 31 + getInclusivity().hashCode();
+		return hash;
+	}
+	
 	/**
 	 * Converts the given {@link String} into a {@link Range} using the given {@code converter}.<br>
 	 * This is a convenience method that forwards to {@link #parse(String, Function, Pattern)} with
