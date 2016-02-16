@@ -42,7 +42,7 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	private static final Pattern RANGE_ELEMENT =
 			Pattern.compile("(" + SINGLE_INTERVAL_STRING + "|" + UNION + "|" + INTERSECTION + "|" + ADDITION + "|" + SUBTRACTION + "|" + SINGLE_ELEMENT_STRING + ")");
 	private static final ConsType RANGE = new ConsType("Range");
-	private static final ConsType OPERATION = new ConsType("Operation");
+	private static final ConsType OPERATION = new ConsType("Operation"), UNARY_OPERATION = new ConsType("UnaryOperation");
 	/**
 	 * Default pattern that matches the possible methods of indicating an infinite value on a bound of a {@link Range}.
 	 */
@@ -174,8 +174,12 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	 * @param <T>
 	 *            the type of item that the {@link Range} will contain
 	 * @return the {@link Range} that the {@link String} described
+	 * @throws UnsupportedOperationException
+	 *             if {@code range} includes invalidly chained operators (if the first token in the {@link String} is not a
+	 *             range or the subtraction operator, or there are two or more operators in a row without a range between
+	 *             them)
 	 */
-	public static <T extends Comparable<T>> Range<T> parse(String range, Function<String, T> converter, Pattern infinityMarkers) {
+	public static <T extends Comparable<T>> Range<T> parse(String range, Function<String, T> converter, Pattern infinityMarkers) throws UnsupportedOperationException {
 		ConsCell ranges = new ConsCell(), head = ranges;
 		Matcher m = RANGE_ELEMENT.matcher(range);
 		while (m.find()) {
@@ -203,7 +207,7 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 			else if (m.group(12) != null)
 				head = head.append(new ConsCell((BinaryOperator<Range<T>>) Range::add, OPERATION));
 			else if (m.group(13) != null)
-				head = head.append(new ConsCell((BinaryOperator<Range<T>>) Range::subtract, OPERATION));
+				head = head.append(new ConsCell((BinaryOperator<Range<T>>) Range::subtract, UNARY_OPERATION));
 			else if (m.group(14) != null) {
 				String element = m.group(15) != null ? m.group(15) : m.group(17);
 				Range<T> rng = null;
@@ -224,10 +228,11 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 		if (!ranges.hasLength(1))
 			return new EmptyRange<>();
 		Range<T> nr;
-		if (ranges.getCarType() == OPERATION) {
-			//TODO should we treat the first argument as the empty range, or throw an error?
-			//TODO test that the next one is a range.  Maybe use a ClassCastException?
-			nr = ((BinaryOperator<Range<T>>) ranges.getCar()).apply(new EmptyRange<>(), (Range<T>) (ranges = ranges.getNextConsCell()).getCar());
+		if (ranges.getCarType() != RANGE) {
+			if (ranges.getCarType() == UNARY_OPERATION) //If this is subtraction, we can effectively "negate" the range - that is return a range that excludes this range
+				nr = ((BinaryOperator<Range<T>>) ranges.getCar()).apply(new InfiniteRange<>(), (Range<T>) (ranges = ranges.getNextConsCell()).getCar());
+			else
+				throw new UnsupportedOperationException("Cannot perform a binary operation on a single range.");
 		}
 		else
 			nr = (Range<T>) ranges.getCar();
@@ -237,7 +242,9 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 			if (ranges.getCarType() == RANGE)
 				nr = nr.add((Range<T>) ranges.getCar());
 			else {
-				((BinaryOperator<Range<T>>) ranges.getCar()).apply(nr, (Range<T>) (ranges = ranges.getNextConsCell()).getCar()); //TODO test that the next one is a range.  Maybe use a ClassCastException?
+				if ((ranges = ranges.getNextConsCell()).getCarType() != RANGE)
+					throw new UnsupportedOperationException("Cannot chain operations.");
+				((BinaryOperator<Range<T>>) ranges.getCar()).apply(nr, (Range<T>) ranges.getCar());
 			}
 		}
 		return nr;
