@@ -82,4 +82,9 @@ class InfiniteRange<T extends Comparable<T>> extends Range<T> implements Seriali
 		//If the subtracted range was inclusive on its lower bound, make the new range exclusive on it's upper bound, otherwise, make the new range inclusive on both bounds. 
 		return new CeilingRange<>(range.getMin(), range.getInclusivity().includesLower() ? Inclusivity.LOWER : Inclusivity.BOTH);
 	}
+
+	@Override
+	public Range<T> intersection(Range<T> other) {
+		return other;
+	}
 }

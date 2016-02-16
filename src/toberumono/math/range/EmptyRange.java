@@ -65,4 +65,9 @@ public class EmptyRange<T extends Comparable<T>> extends Range<T> implements Ser
 	public String toString() {
 		return "[]";
 	}
+
+	@Override
+	public Range<T> intersection(Range<T> other) {
+		return this;
+	}
 }

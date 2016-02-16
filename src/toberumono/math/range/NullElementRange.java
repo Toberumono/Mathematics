@@ -72,4 +72,11 @@ class NullElementRange<T extends Comparable<T>> extends Range<T> implements Seri
 	public String toString() {
 		return "[null]";
 	}
+
+	@Override
+	public Range<T> intersection(Range<T> other) {
+		if (other instanceof MultipleIntervalRange)
+			return other.intersection(this);
+		return other instanceof NullElementRange ? this : new EmptyRange<>();
+	}
 }

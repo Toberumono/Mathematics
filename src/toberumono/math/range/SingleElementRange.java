@@ -87,4 +87,15 @@ class SingleElementRange<T extends Comparable<T>> extends Range<T> implements Se
 	public String toString() {
 		return "[" + element.toString() + "]";
 	}
+	
+	@Override
+	public Range<T> intersection(Range<T> other) {
+		int overlap = findOverlap(other);
+		if (overlap == 2)
+			return other;
+		else if (overlap == 3)
+			return this;
+		else
+			return new EmptyRange<>();
+	}
 }

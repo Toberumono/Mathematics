@@ -69,7 +69,7 @@ class CeilingRange<T extends Comparable<T>> extends Range<T> implements Serializ
 			return 3;
 		if (other instanceof NullElementRange) //A range contains the NullElementRange iff it contains a null element
 			return getMax() == null ? 2 : 0;
-			
+		
 		boolean ocu = other.contains(getMax()), ocl = other.getMin() == null;
 		boolean tcu = contains(other.getMax()), tcl = other.getMin() == null || contains(other.getMin());
 		
@@ -78,7 +78,7 @@ class CeilingRange<T extends Comparable<T>> extends Range<T> implements Serializ
 			tcu = !getInclusivity().includesUpper() && !other.getInclusivity().includesUpper();
 		if (!tcl && (getMin() == other.getMin() || (getMin() != null && other.getMin() != null && getMin().compareTo(other.getMin()) == 0)))
 			tcl = !getInclusivity().includesLower() && !other.getInclusivity().includesLower();
-			
+		
 		if (tcu && tcl) //If this contains other's boundaries
 			return 2;
 		if (ocu && ocl) //If other contains both of this's boundaries but this does not contain both of other's boundaries
@@ -141,6 +141,23 @@ class CeilingRange<T extends Comparable<T>> extends Range<T> implements Serializ
 				return new EmptyRange<>();
 			default: //If there is no overlap, then subtraction does nothing
 				return this;
+		}
+	}
+	
+	@Override
+	public Range<T> intersection(Range<T> other) {
+		if (other instanceof MultipleIntervalRange)
+			return other.intersection(this);
+		switch (findOverlap(other)) {
+			case 1:
+				return new SingleIntervalRange<>(other.getMin(), getMax(), Inclusivity.merge(other.getInclusivity(), getInclusivity()));
+			case 2:
+			case 4:
+				return other;
+			case 3:
+				return this;
+			default:
+				return new EmptyRange<>();
 		}
 	}
 }

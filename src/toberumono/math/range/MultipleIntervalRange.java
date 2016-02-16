@@ -216,6 +216,32 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements
 	}
 	
 	@Override
+	public Range<T> intersection(Range<T> other) {
+		List<Range<T>> nr = new ArrayList<>();
+		if (other instanceof MultipleIntervalRange)
+			nr.addAll(((MultipleIntervalRange<T>) other).ranges);
+		else
+			nr.add(other);
+		for (Range<T> r : ranges) {
+			Range<T> resr;
+			for (int i = 0; i < nr.size();) {
+				resr = nr.remove(i).intersection(r);
+				if (resr instanceof EmptyRange)
+					continue;
+				else { //resr cannot be a MultipleIntervalRange here
+					nr.add(i, resr);
+					i++;
+				}
+			}
+		}
+		if (nr.size() == 0)
+			return new EmptyRange<>();
+		if (nr.size() == 1)
+			return nr.get(0);
+		return new MultipleIntervalRange<>(nr, Inclusivity.merge(nr.get(0).getInclusivity(), nr.get(nr.size() - 1).getInclusivity()));
+	}
+	
+	@Override
 	public String toString() {
 		if (ranges.size() == 0)
 			return "[]";
@@ -223,5 +249,18 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements
 		for (Range<T> range : ranges)
 			output.append(" \u222A ").append(range.toString());
 		return output.toString().substring(3);
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof MultipleIntervalRange))
+			return false;
+		List<?> or = ((MultipleIntervalRange<?>) other).ranges;
+		if (or.size() != ranges.size())
+			return false;
+		for (int i = 0; i < ranges.size(); i++) //Because of how MultipleIntervalRanges are constructed, if all of their ranges are equal, then their ranges will be in the same order
+			if (!ranges.get(i).equals(or.get(i)))
+				return false;
+		return true;
 	}
 }

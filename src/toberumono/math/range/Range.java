@@ -129,8 +129,15 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	 *            the {@link Range} with which to compute the intersection
 	 * @return the intersection between the {@link Range} and the given {@link Range}
 	 */
-	public Range<T> intersection(Range<T> other) {
-		throw new UnsupportedOperationException(); //TODO implement
+	public abstract Range<T> intersection(Range<T> other);
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof Range))
+			return false;
+		Range<?> o = (Range<?>) other;
+		return o.getInclusivity().equals(getInclusivity()) && (getMax() == o.getMax() || (getMax() != null && getMax().equals(o.getMax()))) &&
+				(getMin() == o.getMin() || (getMin() != null && getMin().equals(o.getMin())));
 	}
 	
 	@Override

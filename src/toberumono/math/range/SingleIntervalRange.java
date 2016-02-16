@@ -140,4 +140,22 @@ class SingleIntervalRange<T extends Comparable<T>> extends Range<T> implements S
 				return this;
 		}
 	}
+	
+	@Override
+	public Range<T> intersection(Range<T> other) {
+		if (other instanceof MultipleIntervalRange)
+			return other.intersection(this);
+		switch (findOverlap(other)) {
+			case 1:
+				return new SingleIntervalRange<>(other.getMin(), getMax(), Inclusivity.merge(other.getInclusivity(), getInclusivity()));
+			case 2:
+				return other;
+			case 4:
+				return new SingleIntervalRange<>(getMin(), other.getMax(), Inclusivity.merge(getInclusivity(), other.getInclusivity()));
+			case 3:
+				return this;
+			default:
+				return new EmptyRange<>();
+		}
+	}
 }
