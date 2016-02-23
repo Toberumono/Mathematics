@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @param <T>
  *            the type of the value being stored
  */
-class SingleElementRange<T extends Comparable<T>> extends Range<T> implements Serializable {
+public class SingleElementRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final T element;
 	
 	/**
@@ -18,7 +18,7 @@ class SingleElementRange<T extends Comparable<T>> extends Range<T> implements Se
 	 * @param element
 	 *            the maximum value of the {@link Range}
 	 */
-	SingleElementRange(T element) {
+	public SingleElementRange(T element) {
 		this.element = element;
 	}
 	

@@ -7,7 +7,14 @@ import java.util.List;
 
 import toberumono.structures.collections.lists.SortedList;
 
-class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements Serializable {
+/**
+ * An implementation of {@link Range} that represents the union of several non-overlapping ranges.
+ * 
+ * @author Toberumono
+ * @param <T>
+ *            the type of the value being stored
+ */
+public class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final List<Range<T>> ranges;
 	private Inclusivity netInclusivity;
 	
@@ -22,7 +29,7 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements
 	 * @param ranges
 	 *            a {@link Collection} containing the {@link Range Ranges} to use
 	 */
-	MultipleIntervalRange(Collection<Range<T>> ranges) {
+	public MultipleIntervalRange(Collection<Range<T>> ranges) {
 		this();
 		ranges.addAll(ranges);
 		if (this.ranges.size() > 1)
@@ -39,7 +46,7 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements
 	 * @param range2
 	 *            the second {@link Range}
 	 */
-	MultipleIntervalRange(Range<T> range1, Range<T> range2) {
+	public MultipleIntervalRange(Range<T> range1, Range<T> range2) {
 		this();
 		ranges.add(range1);
 		ranges.add(range2);
@@ -186,6 +193,13 @@ class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> implements
 		}
 	}
 	
+	/**
+	 * Subtracts the {@link MultipleIntervalRange} from the given {@link Range}
+	 * 
+	 * @param range
+	 *            the {@link Range} from which the {@link MultipleIntervalRange} is to be subtracted
+	 * @return the result of subtracting the {@link MultipleIntervalRange} from the given {@link Range}
+	 */
 	public Range<T> subtractFrom(Range<T> range) {
 		List<Range<T>> nr = new ArrayList<>();
 		if (range instanceof MultipleIntervalRange)

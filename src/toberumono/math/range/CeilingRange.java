@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @param <T>
  *            the type of the value being stored
  */
-class CeilingRange<T extends Comparable<T>> extends Range<T> implements Serializable {
+public class CeilingRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final T ceiling;
 	private final Inclusivity inclusivity;
 	
@@ -19,7 +19,7 @@ class CeilingRange<T extends Comparable<T>> extends Range<T> implements Serializ
 	 * @param ceiling
 	 *            the maximum value of the {@link Range}
 	 */
-	CeilingRange(T ceiling) {
+	public CeilingRange(T ceiling) {
 		this(ceiling, Inclusivity.UPPER);
 	}
 	
@@ -31,7 +31,7 @@ class CeilingRange<T extends Comparable<T>> extends Range<T> implements Serializ
 	 * @param inclusivity
 	 *            the {@link Inclusivity} of the {@link Range}
 	 */
-	CeilingRange(T ceiling, Inclusivity inclusivity) {
+	public CeilingRange(T ceiling, Inclusivity inclusivity) {
 		this.ceiling = ceiling;
 		this.inclusivity = inclusivity == Inclusivity.BOTH ? Inclusivity.UPPER : (inclusivity == Inclusivity.LOWER ? Inclusivity.NEITHER : inclusivity);
 	}

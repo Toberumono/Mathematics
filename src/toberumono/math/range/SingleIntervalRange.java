@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @param <T>
  *            the type of the value being stored
  */
-class SingleIntervalRange<T extends Comparable<T>> extends Range<T> implements Serializable {
+public class SingleIntervalRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final T min, max;
 	private final Inclusivity inclusivity;
 	
@@ -21,7 +21,7 @@ class SingleIntervalRange<T extends Comparable<T>> extends Range<T> implements S
 	 * @param max
 	 *            the maximum value of the {@link Range}
 	 */
-	SingleIntervalRange(T min, T max) {
+	public SingleIntervalRange(T min, T max) {
 		this(min, max, Inclusivity.LOWER);
 	}
 	
@@ -35,7 +35,7 @@ class SingleIntervalRange<T extends Comparable<T>> extends Range<T> implements S
 	 * @param inclusivity
 	 *            the {@link Inclusivity} of the {@link Range}
 	 */
-	SingleIntervalRange(T min, T max, Inclusivity inclusivity) {
+	public SingleIntervalRange(T min, T max, Inclusivity inclusivity) {
 		if (min.compareTo(max) > 0) {
 			this.min = max;
 			this.max = min;

@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @param <T>
  *            the type of the value being stored
  */
-class FloorRange<T extends Comparable<T>> extends Range<T> implements Serializable {
+public class FloorRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	private final T floor;
 	private final Inclusivity inclusivity;
 	
@@ -19,7 +19,7 @@ class FloorRange<T extends Comparable<T>> extends Range<T> implements Serializab
 	 * @param floor
 	 *            the minimum value of the {@link Range}
 	 */
-	FloorRange(T floor) {
+	public FloorRange(T floor) {
 		this(floor, Inclusivity.LOWER);
 	}
 	
@@ -31,7 +31,7 @@ class FloorRange<T extends Comparable<T>> extends Range<T> implements Serializab
 	 * @param inclusivity
 	 *            the {@link Inclusivity} of the {@link Range}
 	 */
-	FloorRange(T floor, Inclusivity inclusivity) {
+	public FloorRange(T floor, Inclusivity inclusivity) {
 		this.floor = floor;
 		this.inclusivity = inclusivity == Inclusivity.BOTH ? Inclusivity.LOWER : (inclusivity == Inclusivity.UPPER ? Inclusivity.NEITHER : inclusivity);
 	}

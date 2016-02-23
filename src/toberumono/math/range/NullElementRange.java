@@ -9,10 +9,13 @@ import java.io.Serializable;
  * @param <T>
  *            the type of the value being stored
  */
-class NullElementRange<T extends Comparable<T>> extends Range<T> implements Serializable {
+public class NullElementRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	
-	NullElementRange() {}
-
+	/**
+	 * Creates a new {@link NullElementRange}
+	 */
+	public NullElementRange() {}
+	
 	/**
 	 * Only one element is in this {@link Range}.
 	 * 
@@ -42,7 +45,7 @@ class NullElementRange<T extends Comparable<T>> extends Range<T> implements Seri
 	public Inclusivity getInclusivity() {
 		return Inclusivity.BOTH;
 	}
-
+	
 	@Override
 	protected int findOverlap(Range<T> other) {
 		return 0;
@@ -72,7 +75,7 @@ class NullElementRange<T extends Comparable<T>> extends Range<T> implements Seri
 	public String toString() {
 		return "[null]";
 	}
-
+	
 	@Override
 	public Range<T> intersection(Range<T> other) {
 		if (other instanceof MultipleIntervalRange)

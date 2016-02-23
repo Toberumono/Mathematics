@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @param <T>
  *            the type of the value being stored
  */
-class InfiniteRange<T extends Comparable<T>> extends Range<T> implements Serializable {
+public class InfiniteRange<T extends Comparable<T>> extends Range<T> implements Serializable {
 	
 	/**
 	 * All elements are included this type of {@link Range}.
