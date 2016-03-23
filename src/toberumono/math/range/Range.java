@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import toberumono.structures.sexpressions.BasicConsType;
 import toberumono.structures.sexpressions.ConsCell;
 import toberumono.structures.sexpressions.ConsType;
 
@@ -41,8 +42,8 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	private static final String UNION = "([\u222AuU]|union)", INTERSECTION = "([\u2229iI]|intersect|intersection)", ADDITION = "(\\+)", SUBTRACTION = "(-)";
 	private static final Pattern RANGE_ELEMENT =
 			Pattern.compile("(" + SINGLE_INTERVAL_STRING + "|" + UNION + "|" + INTERSECTION + "|" + ADDITION + "|" + SUBTRACTION + "|" + SINGLE_ELEMENT_STRING + ")");
-	private static final ConsType RANGE = new ConsType("Range");
-	private static final ConsType OPERATION = new ConsType("Operation"), UNARY_OPERATION = new ConsType("UnaryOperation");
+	private static final ConsType RANGE = new BasicConsType("Range");
+	private static final ConsType OPERATION = new BasicConsType("Operation"), UNARY_OPERATION = new BasicConsType("UnaryOperation");
 	/**
 	 * Default pattern that matches the possible methods of indicating an infinite value on a bound of a {@link Range}.
 	 */
@@ -240,7 +241,7 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 		Range<T> nr;
 		if (ranges.getCarType() != RANGE) {
 			if (ranges.getCarType() == UNARY_OPERATION) //If this is subtraction, we can effectively "negate" the range - that is return a range that excludes this range
-				nr = ((BinaryOperator<Range<T>>) ranges.getCar()).apply(new InfiniteRange<>(), (Range<T>) (ranges = ranges.getNextConsCell()).getCar());
+				nr = ((BinaryOperator<Range<T>>) ranges.getCar()).apply(new InfiniteRange<>(), (Range<T>) (ranges = ranges.getNext()).getCar());
 			else
 				throw new UnsupportedOperationException("Cannot perform a binary operation on a single range.");
 		}
@@ -248,11 +249,11 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 			nr = (Range<T>) ranges.getCar();
 		if (!ranges.hasLength(2))
 			return nr;
-		while (!(ranges = ranges.getNextConsCell()).isNull()) {
+		while ((ranges = ranges.getNext()) != null) {
 			if (ranges.getCarType() == RANGE)
 				nr = nr.add((Range<T>) ranges.getCar());
 			else {
-				if ((ranges = ranges.getNextConsCell()).getCarType() != RANGE)
+				if ((ranges = ranges.getNext()).getCarType() != RANGE)
 					throw new UnsupportedOperationException("Cannot chain operations.");
 				((BinaryOperator<Range<T>>) ranges.getCar()).apply(nr, (Range<T>) ranges.getCar());
 			}
