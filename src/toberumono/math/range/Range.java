@@ -253,9 +253,10 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 			if (ranges.getCarType() == RANGE)
 				nr = nr.add((Range<T>) ranges.getCar());
 			else {
+				BinaryOperator<Range<T>> op = (BinaryOperator<Range<T>>) ranges.getCar();
 				if ((ranges = ranges.getNext()).getCarType() != RANGE)
 					throw new UnsupportedOperationException("Cannot chain operations.");
-				((BinaryOperator<Range<T>>) ranges.getCar()).apply(nr, (Range<T>) ranges.getCar());
+				nr = op.apply(nr, (Range<T>) ranges.getCar());
 			}
 		}
 		return nr;

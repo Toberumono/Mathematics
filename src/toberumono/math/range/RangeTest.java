@@ -26,7 +26,7 @@ public class RangeTest {
 	
 	@Test
 	public void parsing() {
-		String[][] tests = {{"(1, 2)", "(1.0, 2.0)"}, {"(-\u221E, 55.1]", "(-\u221E, 55.1]"}, {"[]", "[]"}, {"(\"2.0\")", "[2.0]"}, {"(null)", "[null]"}};
+		String[][] tests = {{"(1, 2)+[2, 3)", "(1.0, 3.0)"}, {"(-\u221E, 55.1]", "(-\u221E, 55.1]"}, {"[]", "[]"}, {"(\"2.0\")", "[2.0]"}, {"(null)", "[null]"}};
 		for (int i = 0; i < tests.length; i++) {
 			Range<Double> range = Range.parse(tests[i][0], DOUBLE_CONVERTER);
 			System.out.println(range.toString());
