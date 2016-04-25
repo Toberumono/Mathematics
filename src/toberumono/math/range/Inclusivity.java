@@ -12,7 +12,7 @@ public enum Inclusivity {
 	/**
 	 * Neither the upper nor lower bound is included in the range. (x, y)
 	 */
-	NEITHER(new String[]{"(", ")"}) {
+	NEITHER(new char[]{'(', ')'}) {
 		@Override
 		public <T extends Comparable<T>> boolean between(T min, T item, T max) {
 			return (min == null || min.compareTo(item) == -1) && (max == null || max.compareTo(item) == 1);
@@ -31,7 +31,7 @@ public enum Inclusivity {
 	/**
 	 * Only the lower bound is included in the range. [x, y)
 	 */
-	LOWER(new String[]{"[", ")"}) {
+	LOWER(new char[]{'[', ')'}) {
 		@Override
 		public <T extends Comparable<T>> boolean between(T min, T item, T max) {
 			return (min == null || min.compareTo(item) < 1) && (max == null || max.compareTo(item) == 1);
@@ -50,7 +50,7 @@ public enum Inclusivity {
 	/**
 	 * Only the upper bound is included in the range. (x, y]
 	 */
-	UPPER(new String[]{"(", "]"}) {
+	UPPER(new char[]{'(', ']'}) {
 		@Override
 		public <T extends Comparable<T>> boolean between(T min, T item, T max) {
 			return (min == null || min.compareTo(item) == -1) && (max == null || max.compareTo(item) > -1);
@@ -69,7 +69,7 @@ public enum Inclusivity {
 	/**
 	 * Both the upper and lower bounds are included in the range. [x, y]
 	 */
-	BOTH(new String[]{"[", "]"}) {
+	BOTH(new char[]{'[', ']'}) {
 		@Override
 		public <T extends Comparable<T>> boolean between(T min, T item, T max) {
 			return (min == null || min.compareTo(item) < 1) && (max == null || max.compareTo(item) > -1);
@@ -88,9 +88,9 @@ public enum Inclusivity {
 	
 	private static final Pattern spaces = Pattern.compile("\\s");
 	
-	private final String[] boundary;
+	private final char[] boundary;
 	
-	private Inclusivity(String[] boundary) {
+	private Inclusivity(char[] boundary) {
 		this.boundary = boundary;
 	}
 	

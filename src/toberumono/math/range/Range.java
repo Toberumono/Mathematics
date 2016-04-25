@@ -1,6 +1,7 @@
 package toberumono.math.range;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -48,6 +49,8 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	 * Default pattern that matches the possible methods of indicating an infinite value on a bound of a {@link Range}.
 	 */
 	public static final Pattern DEFAULT_INFINITY_MARKERS = Pattern.compile("[\\+\\-]?(\u221E|inf|infty|infinity)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	
+	private int hash;
 	
 	/**
 	 * Determines if <tt>item</tt> is in the {@link Range}
@@ -137,8 +140,8 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 		if (!(other instanceof Range))
 			return false;
 		Range<?> o = (Range<?>) other;
-		return o.getInclusivity().equals(getInclusivity()) && (getMax() == o.getMax() || (getMax() != null && getMax().equals(o.getMax()))) &&
-				(getMin() == o.getMin() || (getMin() != null && getMin().equals(o.getMin())));
+		return o.getInclusivity().equals(getInclusivity()) && (getMax() == null ? o.getMax() == null : getMax().equals(o.getMax())) &&
+				(getMin() == null ? o.getMin() == null : getMin().equals(o.getMin()));
 	}
 	
 	@Override
@@ -148,11 +151,8 @@ public abstract class Range<T extends Comparable<T>> implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		int hash = 17;
-		//The use of Doubles to get the hashCode for infinite values is a simple way of consistently representing them.
-		hash = hash * 31 + (getMin() == null ? ((Double) Double.NEGATIVE_INFINITY).hashCode() : getMin().hashCode());
-		hash = hash * 31 + (getMax() == null ? ((Double) Double.POSITIVE_INFINITY).hashCode() : getMax().hashCode());
-		hash = hash * 31 + getInclusivity().hashCode();
+		if (hash == 0)
+			hash = Objects.hash(getInclusivity(), getMin(), getMax());
 		return hash;
 	}
 	
