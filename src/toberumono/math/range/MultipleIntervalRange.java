@@ -262,7 +262,7 @@ public class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> imp
 		StringBuilder output = new StringBuilder();
 		for (Range<T> range : ranges)
 			output.append(" \u222A ").append(range.toString());
-		return output.toString().substring(3);
+		return output.substring(3);
 	}
 	
 	@Override
