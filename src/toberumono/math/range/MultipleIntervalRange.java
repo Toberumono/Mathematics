@@ -31,7 +31,7 @@ public class MultipleIntervalRange<T extends Comparable<T>> extends Range<T> imp
 	 */
 	public MultipleIntervalRange(Collection<Range<T>> ranges) {
 		this();
-		ranges.addAll(ranges);
+		this.ranges.addAll(ranges);
 		if (this.ranges.size() > 1)
 			netInclusivity = Inclusivity.merge(this.ranges.get(0).getInclusivity(), this.ranges.get(ranges.size() - 1).getInclusivity());
 		else if (this.ranges.size() == 1)
